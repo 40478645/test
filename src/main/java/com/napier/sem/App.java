@@ -108,96 +108,36 @@ public class App
             return null;
         }
     }
-    public ArrayList<Salaries> getSalaryEmployee()
+    public ArrayList<Employee> getSalariesByRoles()
     {
         try
         {
-            System.out.println(
-                    "EmployeeNo" + "\t" + "Salary");
             // Create an SQL statement
             Statement stmt = con.createStatement();
             // Create string for SQL statement
             String strSelect =
-                    "SELECT emp_no, salary FROM salaries limit 10";
+                    "SELECT employees.emp_no, employees.first_name, employees.last_name, salaries.salary\n" +
+                            "FROM employees, salaries, titles\n" +
+                            "WHERE employees.emp_no = salaries.emp_no\n" +
+                            "AND employees.emp_no = titles.emp_no\n" +
+                            "AND salaries.to_date = '9999-01-01'\n" +
+                            "AND titles.to_date = '9999-01-01'\n" +
+                            "AND titles.title = 'Engineer'\n" +
+                            "ORDER BY employees.emp_no ASC";
             // Execute SQL statement
             ResultSet rset = stmt.executeQuery(strSelect);
-            ArrayList<Salaries> salary = new ArrayList<>();
-            // Return new country if valid.
-            // Check one is returned
+            // Extract employee information
+            ArrayList<Employee> employees = new ArrayList<Employee>();
             while (rset.next())
             {
-                Salaries emp = new Salaries();
-                emp.setEmp_no(rset.getString("emp_no"));
-                emp.setSalary(rset.getString("salary"));
-                salary.add(emp);
+                Employee emp = new Employee();
+                emp.emp_no = rset.getInt("employees.emp_no");
+                emp.first_name = rset.getString("employees.first_name");
+                emp.last_name = rset.getString("employees.last_name");
+                emp.salary = rset.getInt("salaries.salary");
+                employees.add(emp);
             }
-            return salary;
-        }
-        catch (Exception e)
-        {
-            System.out.println(e.getMessage());
-            System.out.println("Failed to get salary details");
-            return null;
-        }
-    }
-    public ArrayList<Dept_manager> getDeptManager()
-    {
-        try
-        {
-            System.out.println(
-                    "EmployeeNo" + "\t" + "Department" + "\t" + "Salary");
-            // Create an SQL statement
-            Statement stmt = con.createStatement();
-            // Create string for SQL statement
-            String strSelect =
-                    "SELECT dept_manager.emp_no, dept_manager.dept_no, salaries.salary FROM dept_manager, salaries WHERE " +
-                            "dept_manager.emp_no = salaries.emp_no limit 10";
-            // Execute SQL statement
-            ResultSet rset = stmt.executeQuery(strSelect);
-            ArrayList<Dept_manager> depts = new ArrayList<>();
-            // Return new country if valid.
-            // Check one is returned
-            while (rset.next())
-            {
-                Dept_manager dept = new Dept_manager();
-                dept.setEmp_no(rset.getString("emp_no"));
-                dept.setDept_no(rset.getString("dept_no"));
-                dept.setSalary(rset.getString("salary"));
-                depts.add(dept);
-            }
-            return depts;
-        }
-        catch (Exception e)
-        {
-            System.out.println(e.getMessage());
-            System.out.println("Failed to get salary details");
-            return null;
-        }
-    }
-    public ArrayList<Department> getSalary()
-    {
-        try
-        {
-            System.out.println(
-                    "Department" + "\t" + "Department_name" + "\t");
-            // Create an SQL statement
-            Statement stmt = con.createStatement();
-            // Create string for SQL statement
-            String strSelect =
-                    "SELECT * FROM departments";
-            // Execute SQL statement
-            ResultSet rset = stmt.executeQuery(strSelect);
-            ArrayList<Department> dept = new ArrayList<>();
-            // Return new country if valid.
-            // Check one is returned
-            while (rset.next())
-            {
-                Department de = new Department();
-                de.setDept_no(rset.getString("dept_no"));
-                de.setDept_name(rset.getString("dept_name"));
-                dept.add(de);
-            }
-            return dept;
+            return employees;
         }
         catch (Exception e)
         {
@@ -253,10 +193,10 @@ public class App
         a.connect();
 
         // Extract employee salary information
-        ArrayList<Employee> employees = a.getAllSalaries();
-
+        // ArrayList<Employee> employees = a.getAllSalaries();
+        ArrayList<Employee> employees = a.getSalariesByRoles();
         // Test the size of the returned data - should be 240124
-        System.out.println(employees.size());
+        // System.out.println(employees.size());
         a.printSalaries(employees);
 
         // Disconnect from database
