@@ -3,13 +3,14 @@ package com.napier.sem;
 import java.sql.*;
 import java.util.ArrayList;
 
+import static java.lang.String.format;
+
 public class App
 {
     /**
      * Connection to MySQL database.
      */
     private Connection con = null;
-    private ArrayList<Dept_manager> Dept_managers;
 
     /**
      * Connect to the MySQL database.
@@ -58,17 +59,12 @@ public class App
     public void disconnect()
     {
         if (con != null)
-        {
-            try
-            {
+            try {
                 // Close connection
                 con.close();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 System.out.println("Error closing connection to database");
             }
-        }
     }
     /**
      * Gets all the current employees and salaries.
@@ -89,7 +85,7 @@ public class App
             // Execute SQL statement
             ResultSet rset = stmt.executeQuery(strSelect);
             // Extract employee information
-            ArrayList<Employee> employees = new ArrayList<Employee>();
+            ArrayList<Employee> employees = new ArrayList<>();
             while (rset.next())
             {
                 Employee emp = new Employee();
@@ -127,7 +123,8 @@ public class App
             // Execute SQL statement
             ResultSet rset = stmt.executeQuery(strSelect);
             // Extract employee information
-            ArrayList<Employee> employees = new ArrayList<Employee>();
+            ArrayList<Employee> employees;
+            employees = new ArrayList<>();
             while (rset.next())
             {
                 Employee emp = new Employee();
@@ -146,25 +143,42 @@ public class App
             return null;
         }
     }
-    public void displayDepartment(ArrayList<Department> departments){
-        for (Department de: departments){
-            System.out.println(de.getDept_no()+"\t"+de.getDept_name());
-        }
-    }
-    public void displaySalary(ArrayList<Salaries> salaries){
-        for (Salaries sal: salaries){
-            System.out.println(sal.getEmp_no()+"\t"+sal.getSalary());
-        }
-    }
-    public void displayEmployee(ArrayList<Employee> employees)
+    public ArrayList<Employee> getSalariesByDepartment()
     {
-        for(Employee emp: employees){
-            System.out.println(emp.getEmp_no()+ " \t " + emp.getFirst_name() + " \t " + emp.getLast_name() + "  ");
+        try
+        {
+            // Create an SQL statement
+            Statement stmt = con.createStatement();
+            // Create string for SQL statement
+            String strSelect =
+                    "SELECT employees.emp_no, employees.first_name, employees.last_name, salaries.salary\n" +
+                            "FROM employees, salaries, dept_emp, departments\n" +
+                            "WHERE employees.emp_no = salaries.emp_no\n" +
+                            "AND employees.emp_no = dept_emp.emp_no\n" +
+                            "AND dept_emp.dept_no = departments.dept_no\n" +
+                            "AND salaries.to_date = '9999-01-01'\n" +
+                            "AND departments.dept_no = 'd001'\n" +
+                            "ORDER BY employees.emp_no ASC";
+            // Execute SQL statement
+            ResultSet rset = stmt.executeQuery(strSelect);
+            // Extract employee information
+            ArrayList<Employee> employees = new ArrayList<>();
+            while (rset.next())
+            {
+                Employee emp = new Employee();
+                emp.emp_no = rset.getInt("employees.emp_no");
+                emp.first_name = rset.getString("employees.first_name");
+                emp.last_name = rset.getString("employees.last_name");
+                emp.salary = rset.getInt("salaries.salary");
+                employees.add(emp);
+            }
+            return employees;
         }
-    }
-    public void displayDeptSalary(ArrayList<Dept_manager> Dept_managers){
-        for (Dept_manager dept: Dept_managers){
-            System.out.println(dept.getEmp_no() + "\t" + dept.getDept_no()+ "\t" + dept.getSalary()) ;
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            System.out.println("Failed to get salary details");
+            return null;
         }
     }
     /**
@@ -174,12 +188,12 @@ public class App
     public void printSalaries(ArrayList<Employee> employees)
     {
         // Print header
-        System.out.println(String.format("%-10s %-15s %-20s %-8s", "Emp No", "First Name", "Last Name", "Salary"));
+        System.out.printf("%-10s %-15s %-20s %-8s%n", "Emp No", "First Name", "Last Name", "Salary");
         // Loop over all employees in the list
         for (Employee emp : employees)
         {
             String emp_string =
-                    String.format("%-10s %-15s %-20s %-8s",
+                    format("%-10s %-15s %-20s %-8s",
                             emp.emp_no, emp.first_name, emp.last_name, emp.salary);
             System.out.println(emp_string);
         }
@@ -193,12 +207,14 @@ public class App
         a.connect();
 
         // Extract employee salary information
-        // ArrayList<Employee> employees = a.getAllSalaries();
-        ArrayList<Employee> employees = a.getSalariesByRoles();
+        // ArrayList<Employee> employ = a.getAllSalaries();
+        // ArrayList<Employee> employees = a.getSalariesByRoles();
+        ArrayList<Employee> employeess = a.getSalariesByDepartment();
         // Test the size of the returned data - should be 240124
         // System.out.println(employees.size());
-        a.printSalaries(employees);
-
+        // a.printSalaries(employ);
+        // a.printSalaries(employees);
+        a.printSalaries(employeess);
         // Disconnect from database
         a.disconnect();
     }
