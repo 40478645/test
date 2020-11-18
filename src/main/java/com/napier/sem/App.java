@@ -66,7 +66,7 @@ public class App
                 System.out.println("Error closing connection to database");
             }
     }
-    public Employee getEmployee(int ID)
+    public Employee getEmployees(int ID)
     {
         try
         {
@@ -286,18 +286,11 @@ public class App
         // Connect to database
         a.connect("localhost:33060");
 
-        // Extract employee salary information
-        // ArrayList<Employee> employ = a.getAllSalaries();
-        // ArrayList<Employee> employees = a.getSalariesByRoles();
-        // ArrayList<Employee> employeess = a.getSalariesByDepartment();
-        // Test the size of the returned data - should be 240124
-        // System.out.println(employees.size());
-        // a.printSalaries(employ);
-        // a.printSalaries(employees);
-        // a.printSalaries(employeess);
-        Employee emp = a.getEmployee(255530);
-        // Display results
-        a.displayEmployee(emp);
+        ArrayList<Employee> employees = a.getSalariesByDepartment();
+
+        // Print salary report
+        a.printSalaries(employees);
+
         // Disconnect from database
         a.disconnect();
     }
