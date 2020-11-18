@@ -16,6 +16,3 @@ install:
 
 before_script:
   - mvn clean
-
-script:
-  - mvn test -Dtest=com.napier.sem.AppTest
