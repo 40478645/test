@@ -231,6 +231,20 @@ public class App
             System.out.println(emp_string);
         }
     }
+    public void displayEmployee(Employee emp)
+    {
+        if (emp != null)
+        {
+            System.out.println(
+                    emp.emp_no + " "
+                            + emp.first_name + " "
+                            + emp.last_name + "\n"
+                            + emp.title + "\n"
+                            + "Salary:" + emp.salary + "\n"
+                            + emp.dept_name + "\n"
+                            + "Manager: " + emp.manager + "\n");
+        }
+    }
     public static void main(String[] args)
     {
         // Create new Application
@@ -238,16 +252,18 @@ public class App
 
         // Connect to database
         a.connect("localhost:33060");
-
         // Extract employee salary information
         // ArrayList<Employee> employ = a.getAllSalaries();
         // ArrayList<Employee> employees = a.getSalariesByRoles();
-        ArrayList<Employee> employeess = a.getSalariesByDepartment();
+        // ArrayList<Employee> employeess = a.getSalariesByDepartment();
         // Test the size of the returned data - should be 240124
         // System.out.println(employees.size());
         // a.printSalaries(employ);
         // a.printSalaries(employees);
-        a.printSalaries(employeess);
+        // a.printSalaries(employeess);
+        Employee emp = a.getEmployee(255530);
+        // Display results
+        a.displayEmployee(emp);
         // Disconnect from database
         a.disconnect();
     }
