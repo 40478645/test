@@ -3,6 +3,7 @@ package com.napier.sem;
 public class Department {
     private String dept_no;
     private String dept_name;
+    public Employee manager;
 
     public String getDept_no() {
         return dept_no;
