@@ -286,11 +286,11 @@ public class App
         // Connect to database
         a.connect("localhost:33060");
 
-        ArrayList<Employee> employees = a.getSalariesByDepartment();
-
+        // ArrayList<Employee> employees = a.getSalariesByDepartment();
+        Employee emp = a.getEmployee(233);
+        a.displayEmployee(emp);
         // Print salary report
-        a.printSalaries(employees);
-
+        // a.printSalaries(employees);
         // Disconnect from database
         a.disconnect();
     }
